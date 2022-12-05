@@ -5,6 +5,7 @@
     "arcanis.vscode-zipfs",
     "willLuke.nextjs",
     "bradlc.vscode-tailwindcss",
-    "Prisma.prisma"
+    "Prisma.prisma",
+    "Casbin.vscode-casbin"
   ]
 }

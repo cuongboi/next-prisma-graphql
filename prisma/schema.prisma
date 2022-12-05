@@ -82,3 +82,16 @@ model media {
   room      rooms?   @relation(fields: [room_id], references: [id])
   review    reviews? @relation(fields: [review_id], references: [id])
 }
+
+model policies {
+  id    String  @id @default(uuid())
+  ptype String // type of policy enum ["p", "g"]
+  v0    String? // group_id or user_id
+  v1    String? // path
+  v2    String? // method
+  v3    String? // model
+  v4    String? // action
+  v5    String? // effect
+
+  @@index([ptype])
+}
