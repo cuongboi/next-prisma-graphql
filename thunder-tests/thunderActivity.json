@@ -1,0 +1,24 @@
+[
+  {
+    "_id": "f2031a39-a4e8-4b1e-a733-dd8cf2038a67",
+    "colId": "history",
+    "containerId": "",
+    "name": "http://localhost:3000/api/public/graphql",
+    "url": "http://localhost:3000/api/public/graphql",
+    "method": "POST",
+    "sortNum": 0,
+    "created": "2022-12-03T14:34:52.791Z",
+    "modified": "2022-12-04T13:59:29.309Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "graphql",
+      "raw": "",
+      "form": [],
+      "graphql": {
+        "query": "query {\n  findManyUsers {\n    email\n    id\n    name\n  }\n}"
+      }
+    },
+    "tests": []
+  }
+]

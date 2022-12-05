@@ -1,0 +1,105 @@
+{
+  "Print to console": {
+    "prefix": "cl",
+    "body": ["console.log($1);"],
+    "description": "Log output to console this is a example snippet"
+  },
+  "Create Page ": {
+    "prefix": "np",
+    "body": [
+      "import React from 'react';",
+      "import Head from '@components/head';",
+      "import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';",
+      "",
+      "type ${1:PageName}Props = {",
+      "  page_name: string;",
+      "}",
+      "",
+      "export const getServerSideProps : GetServerSideProps<${1:PageName}Props> = async (ctx : GetServerSidePropsContext) => {",
+      "  return {",
+      "    props: {",
+      "      page_name : '${1:PageName} Example Page'",
+      "    }",
+      "  }",
+      "}",
+      "",
+      "const ${1:PageName}: NextPage<${1:PageName}Props> = (props) => {",
+      "  return (",
+      "    <>",
+      "      <Head title={ props.page_name } />",
+      "",
+      "    </>",
+      "  );",
+      "}",
+      "",
+      "export default ${1:PageName};",
+      ""
+    ],
+    "description": "Create new next page in this project"
+  },
+  "Create API": {
+    "prefix": "na",
+    "body": [
+      "import { requestValidate, NextApiHandler } from \"@helpers/validate\";",
+      "import { getUserLogin } from \"@helpers/user\";",
+      "",
+      "const ${1:Hello}API : NextApiHandler<{}> = async (req, res) => {",
+      "  res.status(200).json({ name: 'Hello world!' })",
+      "}",
+      "",
+      "export default ${1:Hello}API;"
+    ],
+    "description": "Snippet for create API in this project"
+  },
+  "Create new component": {
+    "description": "Snippet for quick create an example component in this project",
+    "prefix": "nc",
+    "body": [
+      "import { FunctionComponent } from \"react\";",
+      "",
+      "interface ${1:Hello}ComponentProps {",
+      "  name: string",
+      "  className: string",
+      "}",
+      "",
+      "const ${1:Hello}Component :  FunctionComponent<${1:Hello}ComponentProps> = (props) => {",
+      "  return (",
+      "    ${2:<h1 className={props.className\\} >Hello { props.name \\}</h1>}",
+      "  )",
+      "}",
+      "",
+      "${1:Hello}Component.defaultProps = {",
+      "  name : 'world'",
+      "}",
+      "",
+      "export default ${1:Hello}Component;"
+    ]
+  },
+  "Create React Context ": {
+    "prefix": "nrc",
+    "body": [
+      "import React from 'react';",
+      "",
+      "type ${1:Hello}ContextProps = {",
+      "  title: string",
+      "  setTitle: (title: string) => void",
+      "}",
+      "",
+      "export const ${1:Hello}Context = React.createContext<${1:Hello}ContextProps>({",
+      "  title: '',",
+      "  setTitle: () => {}",
+      "});",
+      "",
+      "export const ${1:Hello}Provider : React.FC<React.ReactNode> = ({children} : any) => {",
+      "  const [title, setTitle] = React.useState<string>('');",
+      "",
+      "  return <${1:Hello}Context.Provider value={{ title, setTitle }}>",
+      "    {children}",
+      "  </${1:Hello}Context.Provider>",
+      "}",
+      "",
+      "export const use${1:Hello} = () => React.useContext(${1:Hello}Context);"
+    ],
+    "description": "Create Context Example"
+  }
+}

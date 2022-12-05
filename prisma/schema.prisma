@@ -1,0 +1,84 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator typegraphql {
+  provider        = "typegraphql-prisma"
+  output          = "./generated/type-graphql"
+  useSimpleInputs = true
+}
+
+model users {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  name        String?
+  password    String
+  verified_at DateTime?
+  phone       String?
+  description String?
+  avatar      String?
+  role        String?   @default("user")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model rooms {
+  id           String    @id @default(uuid())
+  published_at DateTime?
+  price        Int
+  title        String
+  content      String?
+  address      String?
+  conveniences String?
+  latitude     Float?
+  longitude    Float?
+  image        String?
+  images       media[]
+  deleted_at   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model reservations {
+  id         String    @id @default(uuid())
+  room_id    String
+  user_id    String
+  check_in   DateTime
+  check_out  DateTime
+  price      Int
+  total      Int
+  deleted_at DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model reviews {
+  id             String    @id @default(uuid())
+  room_id        String
+  reservation_id String?
+  user_id        String
+  content        String
+  rating         Int
+  images         media[]
+  deleted_at     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model media {
+  id        String   @id @default(uuid())
+  room_id   String?
+  review_id String?
+  image_url String
+  mime_type String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  room      rooms?   @relation(fields: [room_id], references: [id])
+  review    reviews? @relation(fields: [review_id], references: [id])
+}

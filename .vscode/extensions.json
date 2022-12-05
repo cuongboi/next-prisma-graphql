@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "rangav.vscode-thunder-client",
+    "arcanis.vscode-zipfs",
+    "willLuke.nextjs",
+    "bradlc.vscode-tailwindcss",
+    "Prisma.prisma"
+  ]
+}
