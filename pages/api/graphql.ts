@@ -7,8 +7,11 @@ import {
   AuthClass,
   getEnforcer,
   parsePolicyEffect,
+  AuthorizerResolver,
 } from "@/utils/authorization";
 import deepMerge from "@/utils/deepMerge";
+import { PrismaClient } from "@prisma/client";
+import { GraphQLError } from "graphql";
 
 export const config = {
   api: {
@@ -16,7 +19,8 @@ export const config = {
   },
 };
 
-let server: any;
+let schema: any;
+let prismaContext: PrismaClient;
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,47 +34,51 @@ export default async function handler(
 
   AuthClass.setAuth(req);
 
-  if (!server) {
-    const schema = await buildSchema({
-      resolvers,
+  if (!schema) {
+    schema = await buildSchema({
+      resolvers: [...resolvers, AuthorizerResolver],
       validate: false,
-    });
-
-    const enforcer = await getEnforcer();
-
-    prisma.$use(async (params, next) => {
-      const auth = await AuthClass.getAuth();
-
-      try {
-        const [result, policy] = await enforcer.enforceEx(
-          {
-            path: req.url,
-            method: req.method,
-          },
-          auth,
-          params
-        );
-
-        if (!result) {
-          throw new Error("Not authorized");
-        }
-
-        params.args = deepMerge(params.args, parsePolicyEffect(policy));
-
-        return await next(params);
-      } catch (e: any) {
-        console.log(e.message);
-
-        return [];
-      }
-    });
-
-    server = createYoga({
-      graphqlEndpoint: "/api/graphql",
-      schema,
-      context: { prisma },
     });
   }
 
-  return server(req, res);
+  if (!prismaContext) {
+    prismaContext = new PrismaClient();
+    const enforcer = await getEnforcer();
+    prismaContext.$use(async (params, next) => {
+      const context = {
+        req: {
+          path: req.url,
+          method: req.method,
+          query: req.query,
+        },
+        user: AuthClass.getAuth(),
+        params,
+      };
+
+      try {
+        const [result, policy] = await enforcer.enforceEx(
+          ...Object.values(context)
+        );
+
+        if (!result) {
+          throw new Error("Unauthorized");
+        }
+
+        params.args = deepMerge(
+          params.args,
+          parsePolicyEffect(policy, context)
+        );
+
+        return await next(params);
+      } catch (e: any) {
+        return new GraphQLError(e.message);
+      }
+    });
+  }
+
+  return createYoga({
+    graphqlEndpoint: "/api/graphql",
+    schema,
+    context: { prisma: prismaContext, req },
+  })(req, res);
 }

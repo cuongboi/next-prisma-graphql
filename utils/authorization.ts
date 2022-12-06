@@ -3,6 +3,9 @@ import { decode } from "jsonwebtoken";
 import { resolve } from "path";
 import { newEnforcer } from "casbin";
 import AuthorizerAdapter from "@/utils/casbin-adapter";
+import { Resolver, Query, Ctx } from "type-graphql";
+import { Users } from "@/prisma/generated/type-graphql";
+import _ from "lodash";
 
 export const getEnforcer = async () => {
   const adapter = await AuthorizerAdapter.newAdapter();
@@ -32,21 +35,43 @@ const getAuth: (req: NextApiRequest) => Promise<{
 
 export class AuthClass {
   private static _auth: any;
+  private static _req: NextApiRequest;
 
-  static async getAuth() {
-    return this._auth;
+  static getAuth() {
+    return this._auth || {};
+  }
+
+  static getReq() {
+    return this._req;
   }
 
   static async setAuth(req: NextApiRequest) {
+    this._req = req;
     this._auth = await getAuth(req);
   }
 }
 
-export const parsePolicyEffect: (policy: string[]) => { [key: string]: any } = (
-  policy
-) => {
+type MeAttribute = Omit<Users, "password" | "createdAt" | "updatedAt">;
+@Resolver((_of) => Users)
+export class AuthorizerResolver {
+  @Query((returns) => Users, { nullable: true })
+  async me(
+    @Ctx() { req }: { req: NextApiRequest }
+  ): Promise<MeAttribute | null> {
+    return (await getAuth(req)) as MeAttribute;
+  }
+}
+
+export const parsePolicyEffect: (
+  policy: string[],
+  context: any
+) => { [key: string]: any } = (policy, context) => {
   try {
-    return JSON.parse(Buffer.from(policy[5], "base64").toString("utf-8"));
+    const effectJson = Buffer.from(policy[5], "base64")
+      .toString("utf-8")
+      .fill(context);
+
+    return JSON.parse(effectJson);
   } catch (e) {
     return {};
   }

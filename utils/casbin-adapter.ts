@@ -18,7 +18,14 @@ class AuthorizerAdapter implements Adapter {
       const lineString =
         line.ptype +
         ", " +
-        [line.v0, line.v1, line.v2, line.v3 || "", line.v4 || "", line.v5 || ""]
+        [
+          line.v0 || " ",
+          line.v1 || " ",
+          line.v2 || " ",
+          line.v3 || " ",
+          line.v4 || " ",
+          line.v5 || " ",
+        ]
           .filter((n) => n)
           .join(", ");
 

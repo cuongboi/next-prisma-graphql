@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const { PrismaClient } = require("@prisma/client");
+require("./utils/string");
 
 global.prisma = new PrismaClient();
 
